@@ -2,6 +2,7 @@
 #define ImageCube_MyModel_h
 
 #include "Data.h"
+#include "MyConditionalPrior.h"
 #include "DNest4/code/DNest4.h"
 #include <ostream>
 
@@ -21,6 +22,12 @@ class MyModel
         static void load_data(const char* filename);
 
     private:
+
+        // The sources
+        DNest4::RJObject<MyConditionalPrior> sources;
+
+        // Model image
+        Array3D<double> model_pixel_intensities;
 
     public:
         // Constructor only gives size of params

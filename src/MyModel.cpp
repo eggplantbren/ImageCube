@@ -13,6 +13,11 @@ void MyModel::load_data(const char* filename)
 }
 
 MyModel::MyModel()
+:sources(3,
+         100,
+         false,
+         MyConditionalPrior(), DNest4::PriorType::log_uniform)
+,model_pixel_intensities(data.get_pixel_intensities())
 {
 
 }
