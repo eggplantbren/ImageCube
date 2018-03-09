@@ -7,6 +7,7 @@ dnest:
 	make noexamples -C DNest4/code
 
 objects:
+	$(CC) $(CCFLAGS) -c src/Data.cpp
 	$(CC) $(CCFLAGS) -c src/main.cpp
 	$(CC) $(CCFLAGS) -c src/MyModel.cpp
 
