@@ -28,6 +28,9 @@ class Data
         // Constructor
         Data();
 
+        // Constructor that also loads data
+        Data(const char* filename);
+
         // Load data from file
         void load(const char* filename);
 
