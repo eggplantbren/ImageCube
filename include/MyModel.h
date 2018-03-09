@@ -1,6 +1,7 @@
 #ifndef ImageCube_MyModel_h
 #define ImageCube_MyModel_h
 
+#include "Data.h"
 #include "DNest4/code/DNest4.h"
 #include <ostream>
 
@@ -11,6 +12,15 @@ class MyModel
 {
     private:
 
+        // Static dataset
+        static Data data;
+
+    public:
+
+        // Loader for the static dataset
+        static void load_data(const char* filename);
+
+    private:
 
     public:
         // Constructor only gives size of params

@@ -33,6 +33,9 @@ void Data::load(const char* filename)
         return;
     }
 
+    // Message
+    std::cout << "# Reading data from " << filename << "..." << std::flush;
+
     // Read the data
     for(size_t i=0; i<nx; ++i)
         for(size_t j=0; j<ny; ++j)
@@ -41,6 +44,7 @@ void Data::load(const char* filename)
 
     // Close the file
     fin.close();
+    std::cout << "done." << std::endl;
 }
 
 } // namespace ImageCube

@@ -4,6 +4,14 @@
 namespace ImageCube
 {
 
+// The data
+Data MyModel::data;
+
+void MyModel::load_data(const char* filename)
+{
+    data.load(filename);
+}
+
 MyModel::MyModel()
 {
 
