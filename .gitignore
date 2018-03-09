@@ -1,3 +1,8 @@
 # Ignore the binary
 main
 
+# Python output
+data/example_data.txt
+python/images/*.png
+python/images/movie.mkv
+
