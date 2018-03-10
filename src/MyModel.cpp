@@ -24,12 +24,15 @@ MyModel::MyModel()
 
 void MyModel::from_prior(DNest4::RNG& rng)
 {
-
+    sources.from_prior(rng);
 }
 
 double MyModel::perturb(DNest4::RNG& rng)
 {
     double logH = 0.0;
+
+    logH += sources.perturb(rng);
+
     return logH;
 }
 
@@ -41,7 +44,7 @@ double MyModel::log_likelihood() const
 
 void MyModel::print(std::ostream& out) const
 {
-
+    sources.print(out);
 }
 
 std::string MyModel::description() const
