@@ -9,12 +9,20 @@
 namespace ImageCube
 {
 
+// 2D arrays
+using Array2D = std::vector<std::vector<double>>;
+
 class MyModel
 {
     private:
 
         // Static dataset
         static Data data;
+
+        // Grids (pixel centers)
+        static Array2D xs;
+        static Array2D ys;
+        static std::vector<double> fs;
 
     public:
 
@@ -27,8 +35,8 @@ class MyModel
         DNest4::RJObject<MyConditionalPrior> sources;
 
         // Model image
-        Array3D<double> model_pixel_intensities;
-        void compute_model_pixel_intensities();
+        Array3D<double> model_image;
+        void compute_model_image();
 
     public:
 

@@ -6,3 +6,11 @@ data/example_data.txt
 python/images/*.png
 python/images/movie.mkv
 
+# DNest4 output
+levels.txt
+posterior_sample.txt
+sample.txt
+sample_info.txt
+sampler_state.txt
+weights.txt
+

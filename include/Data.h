@@ -28,11 +28,12 @@ class Data
         static constexpr double y_max = ny*dy;
         static constexpr double f_min = 0.0;
         static constexpr double f_max = nf*df;
+        static constexpr double sigma = 1E-3;
 
     private:
 
         // The data itself
-        Array3D<double> pixel_intensities;
+        Array3D<double> image;
 
     public:
 
@@ -46,8 +47,8 @@ class Data
         void load(const char* filename);
 
         // Getter
-        const Array3D<double> get_pixel_intensities() const
-        { return pixel_intensities; }
+        const Array3D<double> get_image() const
+        { return image; }
 
 };
 

@@ -6,77 +6,105 @@ namespace ImageCube
 
 // The data
 Data MyModel::data;
+Array2D MyModel::xs;
+Array2D MyModel::ys;
+std::vector<double> MyModel::fs;
 
 void MyModel::load_data(const char* filename)
 {
+    // Read in data
     data.load(filename);
+
+    // Set up grids
+    xs.resize(Data::nx, std::vector<double>(Data::ny));
+    ys.resize(Data::nx, std::vector<double>(Data::ny));
+    fs.resize(Data::nf);
+
+    for(size_t i=0; i<Data::nx; ++i)
+    {
+        for(size_t j=0; j<Data::ny; ++j)
+        {
+            xs[i][j] = Data::x_min + (i + 0.5)*Data::dx;
+            ys[i][j] = Data::y_min + (j + 0.5)*Data::dy;
+        }
+    }
+
+    for(size_t k=0; k<Data::nf; ++k)
+        fs[k] = Data::f_min + (k + 0.5)*Data::df;
 }
 
 MyModel::MyModel()
 :sources(8,
-         100,
+         10,
          false,
          MyConditionalPrior(), DNest4::PriorType::log_uniform)
-,model_pixel_intensities(data.get_pixel_intensities())
+,model_image(data.get_image())
 {
 
 }
 
-void MyModel::compute_model_pixel_intensities()
+
+void MyModel::compute_model_image()
 {
     // Grab the source parameters
     const auto& components = sources.get_components();
-    size_t num_components = components.size();
 
-    // Rearrange them
-    std::vector<double> xc, yc, fc, mass, width, q, cos_theta, sin_theta,
-                        fwidth, coeff;
+    // Zero the image
+    for(size_t i=0; i<Data::nx; ++i)
+        for(size_t j=0; j<Data::ny; ++j)
+            for(size_t k=0; k<Data::nf; ++k)
+                model_image[i][j][k] = 0.0;
+
     for(const auto& component: components)
     {
-        xc.push_back(component[0]);
-        yc.push_back(component[1]);
-        fc.push_back(component[2]);
-        mass.push_back(component[3]);
-        width.push_back(component[4]);
-        q.push_back(component[5]);
-        cos_theta.push_back(cos(component[6]));
-        sin_theta.push_back(sin(component[6]));
-        fwidth.push_back(component[7]);
-    }
-    for(size_t c=0; c<num_components; ++c)
-    {
-        coeff.push_back(mass[c]/(2.0*M_PI*width[c]*width[c]));
-        
-    }
+        // component = { xc, yc, fc, mass, width, q, theta, fwidth }
 
-
-    double x, y, f, xx, yy;
-    for(size_t i=0; i<Data::nx; ++i)
-    {
-        x = Data::x_min + 0.5*Data::dx;
-        for(size_t j=0; j<Data::ny; ++j)
+        // Create rotated and translated grid
+        double q = component[5];
+        double inv_q = 1.0/q;
+        double cos_theta = cos(component[6]);
+        double sin_theta = sin(component[6]);
+        double coeff = component[3]/(2*M_PI*pow(component[4], 2));
+        auto xx = xs;
+        auto yy = ys;
+        for(size_t i=0; i<Data::nx; ++i)
         {
-            y = Data::y_min + 0.5*Data::dy;
-            for(size_t k=0; k<Data::nf; ++k)
+            for(size_t j=0; j<Data::ny; ++j)
             {
-                f = Data::f_min + 0.5*Data::df;
+                xx[i][j] = cos_theta*(xs[i][j] - component[0])
+                                + sin_theta*(ys[i][j] - component[1]);
+                yy[i][j] = -sin_theta*(xs[i][j] - component[0])
+                                + cos_theta*(ys[i][j] - component[1]);
+            }
+        }
 
-                // Shorthand
-                double& pixel = model_pixel_intensities[i][j][k];
-                pixel = 0.0;
+        std::vector<double> f_gaussian(Data::nf);
+        for(size_t k=0; k<Data::nf; ++k)
+            f_gaussian[k] = exp(-0.5*pow((fs[k] - component[2])/component[7], 2))
+                                           /sqrt(2*M_PI*component[7]);
 
-                for(size_t c=0; c<num_components; ++c)
+        double rsq;
+        for(size_t i=0; i<Data::nx; ++i)
+        {
+            for(size_t j=0; j<Data::ny; ++j)
+            {
+                rsq = q*pow(xx[i][j], 2) + inv_q*pow(yy[i][j], 2);
+
+                for(size_t k=0; k<Data::nf; ++k)
                 {
-                    //pixel += 
+                    model_image[i][j][k] +=
+                            coeff*exp(-0.5*rsq)*f_gaussian[k];
                 }
             }
         }
     }
 }
 
+
 void MyModel::from_prior(DNest4::RNG& rng)
 {
     sources.from_prior(rng);
+    compute_model_image();
 }
 
 double MyModel::perturb(DNest4::RNG& rng)
@@ -84,6 +112,7 @@ double MyModel::perturb(DNest4::RNG& rng)
     double logH = 0.0;
 
     logH += sources.perturb(rng);
+    compute_model_image();
 
     return logH;
 }
@@ -91,6 +120,16 @@ double MyModel::perturb(DNest4::RNG& rng)
 double MyModel::log_likelihood() const
 {
     double logL = 0.0;
+
+    double C = -log(Data::sigma) - 0.5*log(2*M_PI);
+    double tau = pow(Data::sigma, -2);
+    const auto& d = data.get_image();
+
+    for(size_t i=0; i<Data::nx; ++i)
+        for(size_t j=0; j<Data::ny; ++j)
+            for(size_t k=0; k<Data::nf; ++k)
+                logL += C - 0.5*tau*pow(d[i][j][k] - model_image[i][j][k], 2);
+
     return logL;
 }
 
