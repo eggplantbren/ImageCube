@@ -149,7 +149,12 @@ double MyModel::log_likelihood() const
 
 void MyModel::print(std::ostream& out) const
 {
+    out << std::setprecision(8);
     sources.print(out);
+    for(size_t i=0; i<Data::nx; ++i)
+        for(size_t j=0; j<Data::ny; ++j)
+            for(size_t k=0; k<Data::nf; ++k)
+                out << model_image[i][j][k] << ' ';
 }
 
 std::string MyModel::description() const
