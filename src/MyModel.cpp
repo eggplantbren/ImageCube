@@ -13,7 +13,7 @@ void MyModel::load_data(const char* filename)
 }
 
 MyModel::MyModel()
-:sources(3,
+:sources(8,
          100,
          false,
          MyConditionalPrior(), DNest4::PriorType::log_uniform)

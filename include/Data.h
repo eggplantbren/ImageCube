@@ -13,12 +13,23 @@ using Array3D = std::vector<std::vector<std::vector<T>>>;
 
 class Data
 {
-    private:
+    public:
 
         // Hard-coded metadata for now
         static constexpr size_t nx = 75;
         static constexpr size_t ny = 80;
         static constexpr size_t nf = 100;
+        static constexpr double dx = 0.1;
+        static constexpr double dy = 0.1;
+        static constexpr double df = 1.0;
+        static constexpr double x_min = 0.0;
+        static constexpr double x_max = nx*dx;
+        static constexpr double y_min = 0.0;
+        static constexpr double y_max = ny*dy;
+        static constexpr double f_min = 0.0;
+        static constexpr double f_max = nf*df;
+
+    private:
 
         // The data itself
         Array3D<double> pixel_intensities;
