@@ -69,6 +69,7 @@ void MyModel::compute_model_image(bool update)
         double cos_theta = cos(component[6]);
         double sin_theta = sin(component[6]);
         double coeff = component[3]/(2*M_PI*pow(component[4], 2));
+        double tau = pow(component[4], -2);
         auto xx = xs;
         auto yy = ys;
         for(size_t i=0; i<Data::nx; ++i)
@@ -92,12 +93,16 @@ void MyModel::compute_model_image(bool update)
         {
             for(size_t j=0; j<Data::ny; ++j)
             {
-                rsq = q*pow(xx[i][j], 2) + inv_q*pow(yy[i][j], 2);
+                // (r/width)^2
+                rsq = (q*pow(xx[i][j], 2) + inv_q*pow(yy[i][j], 2)) * tau;
 
-                for(size_t k=0; k<Data::nf; ++k)
+                if(rsq <= 100.0)
                 {
-                    model_image[i][j][k] +=
-                            coeff*exp(-0.5*rsq)*f_gaussian[k];
+                    for(size_t k=0; k<Data::nf; ++k)
+                    {
+                        model_image[i][j][k] +=
+                                coeff*exp(-0.5*rsq)*f_gaussian[k];
+                    }
                 }
             }
         }
