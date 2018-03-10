@@ -1,5 +1,6 @@
 #include "MyModel.h"
 #include "DNest4/code/DNest4.h"
+#include "Lookup.h"
 
 namespace ImageCube
 {
@@ -84,9 +85,13 @@ void MyModel::compute_model_image(bool update)
         }
 
         std::vector<double> f_gaussian(Data::nf);
+        double K = 1.0/sqrt(2*M_PI*component[7]);
         for(size_t k=0; k<Data::nf; ++k)
-            f_gaussian[k] = exp(-0.5*pow((fs[k] - component[2])/component[7], 2))
-                                           /sqrt(2*M_PI*component[7]);
+        {
+            f_gaussian[k] = Lookup::evaluate(
+                                0.5*pow((fs[k] - component[2])/component[7], 2))
+                                *K;
+        }
 
         double rsq;
         for(size_t i=0; i<Data::nx; ++i)
@@ -101,7 +106,7 @@ void MyModel::compute_model_image(bool update)
                     for(size_t k=0; k<Data::nf; ++k)
                     {
                         model_image[i][j][k] +=
-                                coeff*exp(-0.5*rsq)*f_gaussian[k];
+                                coeff*Lookup::evaluate(0.5*rsq)*f_gaussian[k];
                     }
                 }
             }

@@ -8,6 +8,7 @@ dnest:
 
 objects:
 	$(CC) $(CCFLAGS) -c src/Data.cpp
+	$(CC) $(CCFLAGS) -c src/Lookup.cpp
 	$(CC) $(CCFLAGS) -c src/main.cpp
 	$(CC) $(CCFLAGS) -c src/MyConditionalPrior.cpp
 	$(CC) $(CCFLAGS) -c src/MyModel.cpp
