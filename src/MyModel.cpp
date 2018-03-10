@@ -67,7 +67,7 @@ void MyModel::compute_model_pixel_intensities()
 
                 for(size_t c=0; c<num_components; ++c)
                 {
-                    pixel += 
+                    //pixel += 
                 }
             }
         }
