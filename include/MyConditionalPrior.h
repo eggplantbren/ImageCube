@@ -10,6 +10,13 @@ class MyConditionalPrior : public DNest4::ConditionalPrior
 {
     private:
 
+        // Scale parameter for masses
+        double mass_scale;
+        
+
+        // A Cauchy distribution
+        DNest4::Cauchy cauchy;
+
         double perturb_hyperparameters(DNest4::RNG& rng);
 
     public:
