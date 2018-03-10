@@ -28,8 +28,10 @@ class MyModel
 
         // Model image
         Array3D<double> model_pixel_intensities;
+        void compute_model_pixel_intensities();
 
     public:
+
         // Constructor only gives size of params
         MyModel();
 
