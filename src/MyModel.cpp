@@ -35,7 +35,7 @@ void MyModel::load_data(const char* filename)
 
 MyModel::MyModel()
 :sources(8,
-         10,
+         20,
          false,
          MyConditionalPrior(), DNest4::PriorType::log_uniform)
 ,model_image(data.get_image())
@@ -44,16 +44,20 @@ MyModel::MyModel()
 }
 
 
-void MyModel::compute_model_image()
+void MyModel::compute_model_image(bool update)
 {
     // Grab the source parameters
-    const auto& components = sources.get_components();
+    const auto& components = (update)?(sources.get_added()):
+                             (sources.get_components());
 
     // Zero the image
-    for(size_t i=0; i<Data::nx; ++i)
-        for(size_t j=0; j<Data::ny; ++j)
-            for(size_t k=0; k<Data::nf; ++k)
-                model_image[i][j][k] = 0.0;
+    if(!update)
+    {
+        for(size_t i=0; i<Data::nx; ++i)
+            for(size_t j=0; j<Data::ny; ++j)
+                for(size_t k=0; k<Data::nf; ++k)
+                    model_image[i][j][k] = 0.0;
+    }
 
     for(const auto& component: components)
     {
@@ -112,7 +116,7 @@ double MyModel::perturb(DNest4::RNG& rng)
     double logH = 0.0;
 
     logH += sources.perturb(rng);
-    compute_model_image();
+    compute_model_image(sources.get_removed().size() == 0);
 
     return logH;
 }

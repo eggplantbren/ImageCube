@@ -36,7 +36,7 @@ class MyModel
 
         // Model image
         Array3D<double> model_image;
-        void compute_model_image();
+        void compute_model_image(bool update=false);
 
     public:
 
