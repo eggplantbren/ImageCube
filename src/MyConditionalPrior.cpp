@@ -50,7 +50,7 @@ double MyConditionalPrior::perturb_hyperparameters(DNest4::RNG& rng)
     else
     {
         sig_width += 2.0*rng.randh();
-        DNest4::wrap(sig_width, 0.0, 5.0);
+        DNest4::wrap(sig_width, 0.0, 2.0);
     }
 
     return logH;
@@ -78,7 +78,7 @@ double MyConditionalPrior::log_pdf(const std::vector<double>& vec) const
         return -1E300;
     logp += -log(vec[5]) + g.log_pdf(log(vec[5]));
 
-    return 0.0;
+    return logp;
 }
 
 void MyConditionalPrior::from_uniform(std::vector<double>& vec) const
