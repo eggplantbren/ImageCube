@@ -40,6 +40,7 @@ MyModel::MyModel()
          20,
          false,
          MyConditionalPrior(), DNest4::PriorType::log_uniform)
+,cauchy(0.0, 5.0)
 ,model_image(data.get_image())
 {
 
@@ -120,14 +121,33 @@ void MyModel::from_prior(DNest4::RNG& rng)
 {
     sources.from_prior(rng);
     compute_model_image();
+
+    while(true)
+    {
+        sigma = cauchy.generate(rng);
+        if(std::abs(sigma) <= 300.0)
+            break;
+    }
+    sigma = exp(sigma);
 }
 
 double MyModel::perturb(DNest4::RNG& rng)
 {
     double logH = 0.0;
 
-    logH += sources.perturb(rng);
-    compute_model_image(sources.get_removed().size() == 0);
+    if(rng.rand() <= 0.8)
+    {
+        logH += sources.perturb(rng);
+        compute_model_image(sources.get_removed().size() == 0);
+    }
+    else
+    {
+        sigma = log(sigma);
+        logH += cauchy.perturb(sigma, rng);
+        if(std::abs(sigma) > 300.0)
+            return -1E300;
+        sigma = exp(sigma);
+    }
 
     return logH;
 }
@@ -136,8 +156,8 @@ double MyModel::log_likelihood() const
 {
     double logL = 0.0;
 
-    double C = -log(Data::sigma) - 0.5*log(2*M_PI);
-    double tau = pow(Data::sigma, -2);
+    double C = -log(sigma) - 0.5*log(2*M_PI);
+    double tau = pow(sigma, -2);
     const auto& d = data.get_image();
 
     for(size_t i=0; i<Data::nx; ++i)
@@ -152,6 +172,7 @@ void MyModel::print(std::ostream& out) const
 {
     out << std::setprecision(12);
     sources.print(out);
+    out << sigma << ' ';
 
     out << std::setprecision(6);
 
@@ -164,19 +185,24 @@ void MyModel::print(std::ostream& out) const
 std::string MyModel::description() const
 {
     std::stringstream s;
+
+    // Hyperparameters etc
     s << "dim_components, max_num_components, ";
     s << "mass_scale, mu_width, sig_width, mu_fwidth, sig_fwidth, ";
     s << "num_components, ";
 
+    // Components
     std::vector<std::string> names = {"xc", "yc", "fc", "mass",
                                       "width", "q", "theta",
                                       "fwidth"};
-
     for(size_t i=0; i<names.size(); ++i)
     {
         for(int j=0; j<sources.get_max_num_components(); ++j)
             s << names[i] << '[' << j << "], ";
     }
+
+    s << "sigma, ";
+
     for(size_t i=0; i<Data::nx; ++i)
         for(size_t j=0; j<Data::ny; ++j)
             for(size_t k=0; k<Data::nf; ++k)

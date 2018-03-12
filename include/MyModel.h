@@ -34,6 +34,10 @@ class MyModel
         // The sources
         DNest4::RJObject<MyConditionalPrior> sources;
 
+        // Noise sd
+        double sigma;
+        DNest4::Cauchy cauchy;    // A Cauchy distribution to use
+
         // Model image
         Array3D<double> model_image;
         void compute_model_image(bool update=false);

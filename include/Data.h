@@ -30,7 +30,6 @@ class Data
         static constexpr double scale = sqrt((x_max - x_min)*(y_max - y_min));
         static constexpr double f_min = 0.0;
         static constexpr double f_max = nf*df;
-        static constexpr double sigma = 1E-3;
 
     private:
 
