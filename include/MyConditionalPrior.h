@@ -16,6 +16,9 @@ class MyConditionalPrior : public DNest4::ConditionalPrior
         // Hyperparameters for widths
         double mu_width, sig_width;
 
+        // Hyperparameters for widths in frequency dimension
+        double mu_fwidth, sig_fwidth;
+
         // A Cauchy distribution
         DNest4::Cauchy cauchy;
 

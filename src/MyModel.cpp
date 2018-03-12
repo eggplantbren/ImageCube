@@ -150,8 +150,11 @@ double MyModel::log_likelihood() const
 
 void MyModel::print(std::ostream& out) const
 {
-    out << std::setprecision(8);
+    out << std::setprecision(12);
     sources.print(out);
+
+    out << std::setprecision(6);
+
     for(size_t i=0; i<Data::nx; ++i)
         for(size_t j=0; j<Data::ny; ++j)
             for(size_t k=0; k<Data::nf; ++k)
@@ -162,7 +165,7 @@ std::string MyModel::description() const
 {
     std::stringstream s;
     s << "dim_components, max_num_components, ";
-    s << "mass_scale, mu_width, sig_width, ";
+    s << "mass_scale, mu_width, sig_width, mu_fwidth, sig_fwidth, ";
     s << "num_components, ";
 
     std::vector<std::string> names = {"xc", "yc", "fc", "mass",
