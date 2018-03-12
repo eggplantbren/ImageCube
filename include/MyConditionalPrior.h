@@ -12,7 +12,9 @@ class MyConditionalPrior : public DNest4::ConditionalPrior
 
         // Scale parameter for masses
         double mass_scale;
-        
+
+        // Hyperparameters for widths
+        double mu_width, sig_width;
 
         // A Cauchy distribution
         DNest4::Cauchy cauchy;
