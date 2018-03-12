@@ -22,7 +22,7 @@ void MyConditionalPrior::from_prior(DNest4::RNG& rng)
     }
     mass_scale = exp(mass_scale);
 
-    mu_width = 5.0*rng.rand();
+    mu_width = exp(log(1E-3)*Data::scale + log(1E3)*rng.rand());
     sig_width = 2.0*rng.rand();
 }
 
@@ -42,8 +42,10 @@ double MyConditionalPrior::perturb_hyperparameters(DNest4::RNG& rng)
     }
     else if(which == 1)
     {
-        mu_width += 5.0*rng.randh();
-        DNest4::wrap(mu_width, 0.0, 5.0);
+        mu_width = log(mu_width);
+        mu_width += log(1E3)*rng.randh();
+        DNest4::wrap(mu_width, log(1E-3*Data::scale), log(Data::scale));
+        mu_width = exp(mu_width);
     }
     else
     {

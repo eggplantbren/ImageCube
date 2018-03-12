@@ -1,6 +1,7 @@
 #ifndef ImageCube_Data_h
 #define ImageCube_Data_h
 
+#include <cmath>
 #include <cstdlib>
 #include <vector>
 
@@ -26,6 +27,7 @@ class Data
         static constexpr double x_max = nx*dx;
         static constexpr double y_min = 0.0;
         static constexpr double y_max = ny*dy;
+        static constexpr double scale = sqrt((x_max - x_min)*(y_max - y_min));
         static constexpr double f_min = 0.0;
         static constexpr double f_max = nf*df;
         static constexpr double sigma = 1E-3;
