@@ -1,5 +1,7 @@
 # Ignore the binary
 main
+logfile
+ImageCube
 
 # Python output
 data/example_data.txt
