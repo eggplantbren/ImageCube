@@ -1,6 +1,7 @@
 #include "MyModel.h"
 #include "DNest4/code/DNest4.h"
 #include "Lookup.h"
+#include <sstream>
 
 namespace ImageCube
 {
@@ -159,7 +160,30 @@ void MyModel::print(std::ostream& out) const
 
 std::string MyModel::description() const
 {
-    return std::string("");
+    std::stringstream s;
+    s << "dim_components, max_num_components, ";
+    s << "mass_scale, mu_width, sig_width, ";
+    s << "num_components, ";
+
+    std::vector<std::string> names = {"xc", "yc", "fc", "mass",
+                                      "width", "q", "theta",
+                                      "fwidth"};
+
+    for(size_t i=0; i<names.size(); ++i)
+    {
+        for(int j=0; j<sources.get_max_num_components(); ++j)
+            s << names[i] << '[' << j << "], ";
+    }
+    for(size_t i=0; i<Data::nx; ++i)
+        for(size_t j=0; j<Data::ny; ++j)
+            for(size_t k=0; k<Data::nf; ++k)
+            {
+                s << "model_image[" << i << "][" << j << "][";
+                s << k << "], ";
+            }
+
+    std::string s_str = s.str();
+    return s_str.substr(0, s_str.length()-2);
 }
 
 } // namespace ImageCube
